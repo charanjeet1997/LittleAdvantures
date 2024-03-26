@@ -1050,6 +1050,8 @@ GameObject:
   - component: {fileID: 233852250}
   - component: {fileID: 233852251}
   - component: {fileID: 233852252}
+  - component: {fileID: 233852254}
+  - component: {fileID: 233852253}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1113,12 +1115,47 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abilities: []
-  sensors: []
+  currentState: {fileID: 0}
+  animator: {fileID: 1915736212}
   characterController: {fileID: 233852251}
   locomotionData:
     movementVelocity: {x: 0, y: 0, z: 0}
     movementSpeed: 5
     rotationSpeed: 20
+  groundCheckData:
+    isGrounded: 0
+  animationHashData:
+    locomotionAnimationHash: -2089788878
+  idle: {fileID: 233852254}
+  locomotion: {fileID: 233852253}
+  groundCheck:
+    controller: {fileID: 233852251}
+--- !u!114 &233852253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233852249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d599b9430a44d6c46b3ae0fc5e4eeb19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  owner: {fileID: 233852252}
+--- !u!114 &233852254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233852249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1912e8746a145434c980d5d8fb782d3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  owner: {fileID: 233852252}
 --- !u!1001 &315053679
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2257,6 +2294,11 @@ PrefabInstance:
 --- !u!4 &1915736211 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c8896d83481fca741b2a75c5b0715041, type: 3}
+  m_PrefabInstance: {fileID: 1915736210}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1915736212 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: c8896d83481fca741b2a75c5b0715041, type: 3}
   m_PrefabInstance: {fileID: 1915736210}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1921486839

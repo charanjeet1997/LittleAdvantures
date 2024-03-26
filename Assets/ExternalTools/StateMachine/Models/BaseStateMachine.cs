@@ -10,13 +10,12 @@ namespace Games.SinghKage.StateMachine
 	{
 
 		#region PRIVATE_VARS
-		[SerializeField] protected List<BaseAbility<BaseStateMachine>> abilities;
-		[SerializeField] protected List<BaseSensor<BaseStateMachine>> sensors;
+		[SerializeField] protected List<BaseAbility> abilities;
 		#endregion
 
 		#region PUBLIC_VARS
 
-		public BaseState<BaseStateMachine> currentState;
+		[HideInInspector]public BaseState currentState;
 		#endregion
 
 		#region UNITY_CALLBACKS
@@ -28,20 +27,13 @@ namespace Games.SinghKage.StateMachine
 
 		public virtual void Start()
 		{
-			foreach (var ability in abilities)
+			if (currentState != null)
 			{
-				// execute the ability
-				ability.Initialize(this);
-			}
-			foreach (var sensor in sensors)
-			{
-				// sense the ability
-				sensor.Initialize(this);
+				currentState.Enter();
 			}
 		}
 		public virtual void Update()
 		{
-			CastAbility();
 			if (currentState is ITickable tickable)
 			{
 				tickable.Tick();
@@ -50,6 +42,7 @@ namespace Games.SinghKage.StateMachine
 
 		public virtual void FixedUpdate()
 		{
+			CastAbility();
 			if (currentState is IFixedTickable tickable)
 			{
 				tickable.FixedTick();
@@ -60,11 +53,11 @@ namespace Games.SinghKage.StateMachine
 		{
 			if (currentState is ILateTickable tickable)
 			{
-				tickable.LateTick();
+				tickable.LateTick(); 
 			}
 		}
 
-		public virtual void ChangeState(BaseState<BaseStateMachine> state)
+		public virtual void ChangeState(BaseState state)
 		{
 			if (currentState != null)
 			{
@@ -84,16 +77,6 @@ namespace Games.SinghKage.StateMachine
 			{
 				// execute the ability
 				ability.Execute();
-			}
-		}
-		
-		void Sense()
-		{
-			// loop through the sensors
-			foreach (var sensor in sensors)
-			{
-				// sense the ability
-				sensor.Sense();
 			}
 		}
 

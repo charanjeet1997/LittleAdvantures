@@ -1,14 +1,8 @@
 namespace Games.SinghKage.StateMachine
 {
 	using UnityEngine;
-	[System.Serializable]
-	public abstract class BaseSensor<T> : MonoBehaviour where T : BaseStateMachine
+	public abstract class BaseSensor
 	{
-		protected T owner;
-		public void Initialize(T owner)
-		{
-			this.owner = owner;
-		}
-		public abstract void Sense();
+		public abstract bool Sense();
 	}
 }

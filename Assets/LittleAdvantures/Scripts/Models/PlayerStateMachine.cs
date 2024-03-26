@@ -1,4 +1,5 @@
 
+using System;
 using Games.SinghKage.StateMachine;
 
 namespace Games.SinghKage.LittleAdvantures
@@ -17,6 +18,12 @@ namespace Games.SinghKage.LittleAdvantures
 			public float rotationSpeed;
 		}
 		
+		[Serializable]
+		public class AnimationHashData
+		{
+			public int locomotionAnimationHash = Animator.StringToHash("Locomotion");
+		}
+		[System.Serializable]
 		public class GroundCheckData
 		{
 			public bool isGrounded;
@@ -26,11 +33,22 @@ namespace Games.SinghKage.LittleAdvantures
 		#endregion
 
 		#region PUBLIC_VARS
+
+		public Animator animator;
 		public CharacterController characterController;
 		public IPlayerMovementInput movementInput;
+		
+		[Header("Data")]
 		public LocomotionData locomotionData;
 		public GroundCheckData groundCheckData;
-		public BaseState<PlayerStateMachine> locomotionState;
+		public AnimationHashData animationHashData;
+		
+		[Header("States")]
+		public BaseState idle;
+		public BaseState locomotion;
+		
+		[Header("Sensors")]
+		public GroundCheck groundCheck;
 		#endregion
 
 		#region UNITY_CALLBACKS
@@ -44,21 +62,15 @@ namespace Games.SinghKage.LittleAdvantures
 		public override void Start()
 		{
 			base.Start();
+			currentState = idle;
 			camera = ServiceLocator.Current.Get<ICameraManager>().GetCamera();
 			if (characterController == null)
 			{
 				characterController = GetComponent<CharacterController>();
 			}
 		}
+		
 
-		public override void FixedUpdate()
-		{
-			base.FixedUpdate();
-			CalculatePlayerMovement();
-			ApplyGravity();
-			characterController.Move(locomotionData.movementVelocity);
-			CalculatePlayerRotation();
-		}
 		private void OnDisable()
 		{
 			movementInput.Destroy();
@@ -67,34 +79,7 @@ namespace Games.SinghKage.LittleAdvantures
 		#endregion
 
 		#region PUBLIC_METHODS
-		void CalculatePlayerMovement()
-		{
-			Quaternion cameraRotation = camera.transform.rotation;
-			locomotionData.movementVelocity = new Vector3(movementInput.PlayerInputs().x, 0, movementInput.PlayerInputs().y);
-			locomotionData.movementVelocity.Normalize();
-			locomotionData.movementVelocity = cameraRotation * locomotionData.movementVelocity;
-			locomotionData.movementVelocity *= locomotionData.movementSpeed * Time.deltaTime;
-		}
-		
-		void CalculatePlayerRotation()
-		{
-			if (Mathf.Abs(movementInput.PlayerInputs().x) > 0 || Mathf.Abs(movementInput.PlayerInputs().y) > 0)
-			{
-				locomotionData.movementVelocity.y = 0;
-				Quaternion targetRotation = Quaternion.LookRotation(locomotionData.movementVelocity);
-				transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, locomotionData.rotationSpeed * Time.deltaTime);
-			}
-		}
-		
-		void ApplyGravity()
-		{
-			if (!characterController.isGrounded)
-			{
-				float gravity = Physics.gravity.y;
-				locomotionData.movementVelocity += Vector3.down * gravity * Time.deltaTime;
-			}
-		}
-		
+
 		#endregion
 
 		#region PRIVATE_METHODS

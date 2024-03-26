@@ -6,16 +6,17 @@ namespace Games.SinghKage.LittleAdvantures
 	using GameServiceLocator;
 
 
-	public class Locomotion : BaseState<PlayerStateMachine>,IFixedTickable
+	public class Locomotion : BaseState,IFixedTickable,ILateTickable
 	{
 
 		#region PRIVATE_VARS
-
+		
 		private Camera camera;
 		#endregion
 
 		#region PUBLIC_VARS
 
+		public PlayerStateMachine owner;
 		#endregion
 
 		#region UNITY_CALLBACKS
@@ -25,6 +26,7 @@ namespace Games.SinghKage.LittleAdvantures
 		#region PUBLIC_METHODS
 		public override void Enter()
 		{
+			Debug.Log("Enter locomotion state");
 			camera = ServiceLocator.Current.Get<ICameraManager>().GetCamera();
 		}
 		public override void Exit()
@@ -33,9 +35,19 @@ namespace Games.SinghKage.LittleAdvantures
 		}
 		public void FixedTick()
 		{
+			if (owner.movementInput.PlayerInputs().magnitude <= 0)
+			{
+				owner.ChangeState(owner.idle);
+			}
 			CalculatePlayerRotation();
 			CalculatePlayerMovement();
+			owner.characterController.Move(owner.locomotionData.movementVelocity); 
+			GroundCheck();
 			ApplyGravity();
+		}
+		public void LateTick()
+		{
+			Animate();
 		}
 		#endregion
 
@@ -44,8 +56,9 @@ namespace Games.SinghKage.LittleAdvantures
 		{
 			Quaternion cameraRotation = camera.transform.rotation;
 			owner.locomotionData.movementVelocity = new Vector3(owner.movementInput.PlayerInputs().x, 0, owner.movementInput.PlayerInputs().y);
-			owner.locomotionData.movementVelocity.Normalize();
 			owner.locomotionData.movementVelocity = cameraRotation * owner.locomotionData.movementVelocity;
+			owner.locomotionData.movementVelocity.y = 0;
+			owner.locomotionData.movementVelocity.Normalize();
 			owner.locomotionData.movementVelocity *= owner.locomotionData.movementSpeed * Time.deltaTime;
 		}
 		
@@ -61,13 +74,22 @@ namespace Games.SinghKage.LittleAdvantures
 		
 		void ApplyGravity()
 		{
-			if (!owner.characterController.isGrounded)
+			if (!owner.groundCheckData.isGrounded)
 			{
 				float gravity = Physics.gravity.y;
-				owner.locomotionData.movementVelocity += Vector3.down * gravity * Time.deltaTime;
+				owner.locomotionData.movementVelocity += Vector3.up * gravity * Time.deltaTime;
 			}
 		}
-		#endregion
 		
+		void Animate()
+		{
+			owner.animator.SetFloat(owner.animationHashData.locomotionAnimationHash, owner.locomotionData.movementVelocity.normalized.magnitude,0.1f,Time.deltaTime);
+		}
+
+		void GroundCheck()
+		{
+			owner.groundCheckData.isGrounded = owner.groundCheck.Sense();
+		}
+		#endregion
 	}
 }
