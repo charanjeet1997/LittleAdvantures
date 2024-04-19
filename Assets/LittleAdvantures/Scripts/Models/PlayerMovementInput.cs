@@ -1,3 +1,5 @@
+using LittleAdvantures;
+
 namespace Games.SinghKage.LittleAdvantures
 {
 	using UnityEngine.InputSystem;
@@ -22,6 +24,7 @@ namespace Games.SinghKage.LittleAdvantures
 
 		public Vector2 PlayerInputs()
 		{
+//			Debug.Log("PlayerInputs "+new Vector2(horizontalInput, verticalInput));
 			return new Vector2(horizontalInput, verticalInput);
 		}
 
@@ -51,6 +54,7 @@ namespace Games.SinghKage.LittleAdvantures
 		public void OnLocomotion(InputAction.CallbackContext context)
 		{
 			Vector2 value = context.ReadValue<Vector2>();
+			//Debug.Log("Locomotion Input "+value);
 			horizontalInput = value.x;
 			verticalInput = value.y;
 		}

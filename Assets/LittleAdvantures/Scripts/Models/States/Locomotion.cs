@@ -33,17 +33,26 @@ namespace Games.SinghKage.LittleAdvantures
 		{
 			
 		}
-		public void FixedTick()
+		
+
+		public override void Transition()
 		{
-			if (owner.movementInput.PlayerInputs().magnitude <= 0)
+			if (owner.movementInput.PlayerInputs().magnitude <= 0 && owner.groundCheckData.isGrounded)
 			{
 				owner.ChangeState(owner.idle);
 			}
+			if(!owner.groundCheckData.isGrounded)
+			{
+				owner.ChangeState(owner.airBorne);
+			}
+		}
+
+		public void FixedTick()
+		{
 			CalculatePlayerRotation();
 			CalculatePlayerMovement();
 			owner.characterController.Move(owner.locomotionData.movementVelocity); 
 			GroundCheck();
-			ApplyGravity();
 		}
 		public void LateTick()
 		{
@@ -71,19 +80,11 @@ namespace Games.SinghKage.LittleAdvantures
 				transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, owner.locomotionData.rotationSpeed * Time.deltaTime);
 			}
 		}
-		
-		void ApplyGravity()
-		{
-			if (!owner.groundCheckData.isGrounded)
-			{
-				float gravity = Physics.gravity.y;
-				owner.locomotionData.movementVelocity += Vector3.up * gravity * Time.deltaTime;
-			}
-		}
-		
+
 		void Animate()
 		{
 			owner.animator.SetFloat(owner.animationHashData.locomotionAnimationHash, owner.locomotionData.movementVelocity.normalized.magnitude,0.1f,Time.deltaTime);
+			owner.animator.SetBool(owner.animationHashData.AirborneAnimationHash,!owner.groundCheckData.isGrounded);
 		}
 
 		void GroundCheck()

@@ -1,6 +1,8 @@
 
 using System;
+using CommanTickManager;
 using Games.SinghKage.StateMachine;
+using UnityEngine.Serialization;
 
 namespace Games.SinghKage.LittleAdvantures
 {
@@ -21,12 +23,16 @@ namespace Games.SinghKage.LittleAdvantures
 		[Serializable]
 		public class AnimationHashData
 		{
-			public int locomotionAnimationHash = Animator.StringToHash("Locomotion");
+			public readonly int locomotionAnimationHash = Animator.StringToHash("Locomotion");
+			public readonly int AirborneAnimationHash = Animator.StringToHash("Airborne");
 		}
 		[System.Serializable]
 		public class GroundCheckData
 		{
 			public bool isGrounded;
+			public Vector3[] groundRayDirectionOffsets;
+			public float groundRayDistance = 1.1f;
+			public LayerMask groundLayerMask;
 		}
 		#region PRIVATE_VARS
 		private Camera camera;
@@ -46,34 +52,51 @@ namespace Games.SinghKage.LittleAdvantures
 		[Header("States")]
 		public BaseState idle;
 		public BaseState locomotion;
+		public BaseState airBorne;
 		
 		[Header("Sensors")]
 		public GroundCheck groundCheck;
 		#endregion
 
 		#region UNITY_CALLBACKS
-
+		
 		private void Awake()
 		{
 			movementInput = ServiceLocator.Current.Get<IPlayerMovementInput>();
 			movementInput.Init();
 		}
+		
+		//Register tick in on enable
+		private void OnEnable()
+		{
+			ProcessingUpdate.Instance.Add(this);
+		}
 
 		public override void Start()
 		{
 			base.Start();
-			currentState = idle;
+			Debug.Log("Start");
+			ChangeState(idle);
 			camera = ServiceLocator.Current.Get<ICameraManager>().GetCamera();
 			if (characterController == null)
 			{
 				characterController = GetComponent<CharacterController>();
 			}
 		}
-		
 
 		private void OnDisable()
 		{
+			ProcessingUpdate.Instance.Remove(this);
 			movementInput.Destroy();
+		}
+
+		private void OnDrawGizmos()
+		{
+			if (groundCheckData.groundRayDirectionOffsets == null) return;
+			foreach (var offset in groundCheckData.groundRayDirectionOffsets)
+			{
+				Gizmos.DrawRay(transform.position + offset, Vector3.down * groundCheckData.groundRayDistance);
+			}
 		}
 
 		#endregion

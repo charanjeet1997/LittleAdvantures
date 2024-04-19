@@ -34,6 +34,7 @@ namespace Games.SinghKage.StateMachine
 		}
 		public virtual void Update()
 		{
+			if(currentState != null)currentState.Transition();
 			if (currentState is ITickable tickable)
 			{
 				tickable.Tick();

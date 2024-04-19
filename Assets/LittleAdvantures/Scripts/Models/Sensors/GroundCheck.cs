@@ -1,8 +1,10 @@
+using UnityEngine.Serialization;
+
 namespace Games.SinghKage.StateMachine
 {
-	using UnityEngine;
+	using Games.SinghKage.LittleAdvantures;
 	using System;
-	using System.Collections;
+	using UnityEngine;
 
 	[Serializable]
 	public class GroundCheck : BaseSensor
@@ -10,7 +12,7 @@ namespace Games.SinghKage.StateMachine
 
 		#region PRIVATE_VARS
 
-		[SerializeField] private CharacterController controller;
+		public PlayerStateMachine owner;
 		#endregion
 
 		#region PUBLIC_VARS
@@ -23,7 +25,17 @@ namespace Games.SinghKage.StateMachine
 		#region PUBLIC_METHODS
 		public override bool Sense()
 		{
-			return controller.isGrounded;
+			int rayHitCount = 0;
+			for (int indexOfGroundRay = 0; indexOfGroundRay < owner.groundCheckData.groundRayDirectionOffsets.Length; indexOfGroundRay++)
+			{
+				//Check if the ray is hitting the ground
+				Vector3 rayOffset = owner.groundCheckData.groundRayDirectionOffsets[indexOfGroundRay];
+				if (Physics.Raycast(owner.transform.position + rayOffset, Vector3.down,out RaycastHit hit,owner.groundCheckData.groundRayDistance,owner.groundCheckData.groundLayerMask))
+				{
+					rayHitCount++;
+				}
+			}
+			return rayHitCount > 0;
 		}
 
 		#endregion

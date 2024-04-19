@@ -6,7 +6,7 @@ namespace Games.SinghKage.LittleAdvantures
 	using GameServiceLocator;
 
 
-	public class Idle : BaseState,IFixedTickable,ILateTickable
+	public class AirBorne : BaseState,IFixedTickable,ILateTickable
 	{
 
 		#region PRIVATE_VARS
@@ -26,7 +26,7 @@ namespace Games.SinghKage.LittleAdvantures
 		#region PUBLIC_METHODS
 		public override void Enter()
 		{
-			Debug.Log("Enter idle state");
+			Debug.Log("Enter AirBorne state");
 			camera = ServiceLocator.Current.Get<ICameraManager>().GetCamera();
 		}
 		public override void Exit()
@@ -36,20 +36,13 @@ namespace Games.SinghKage.LittleAdvantures
 
 		public override void Transition()
 		{
-			if (owner.movementInput.PlayerInputs().magnitude > 0 && owner.groundCheckData.isGrounded)
-			{
+			if(owner.groundCheckData.isGrounded)
 				owner.ChangeState(owner.locomotion);
-			}
-			if(!owner.groundCheckData.isGrounded)
-			{
-				owner.ChangeState(owner.airBorne);
-			}
 		}
 
 		public void FixedTick()
 		{
 			GroundCheck();
-			owner.characterController.Move(Vector3.zero); 
 		}
 		public void LateTick()
 		{
@@ -58,10 +51,8 @@ namespace Games.SinghKage.LittleAdvantures
 		#endregion
 
 		#region PRIVATE_METHODS
-
 		void Animate()
 		{
-			owner.animator.SetFloat(owner.animationHashData.locomotionAnimationHash, 0,0.1f,Time.deltaTime);
 			owner.animator.SetBool(owner.animationHashData.AirborneAnimationHash,!owner.groundCheckData.isGrounded);
 		}
 		

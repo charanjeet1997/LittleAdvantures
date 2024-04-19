@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-namespace Games.SinghKage.LittleAdvantures
+namespace LittleAdvantures
 {
     public partial class @InputAsset: IInputActionCollection2, IDisposable
     {
@@ -41,7 +41,7 @@ namespace Games.SinghKage.LittleAdvantures
             ],
             ""bindings"": [
                 {
-                    ""name"": ""2D Vector"",
+                    ""name"": ""Locomotion"",
                     ""id"": ""6bd8ef4a-3fd4-4edf-bee2-45a55beec0be"",
                     ""path"": ""2DVector"",
                     ""interactions"": """",
